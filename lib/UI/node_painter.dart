@@ -36,6 +36,17 @@ class NodePainter extends CustomPainter {
     tp.layout();
   }
 
+  bool isWithinHead(double probex, double probey)
+  {
+    return probex >= x && probex <= x + width && probey >= y && probey <= y + topBarHeight;
+  }
+
+  void move(double dx, double dy)
+  {
+    x += dx;
+    y += dy;
+  }
+
   @override
   void paint(Canvas canvas, Size size) {
 
@@ -49,10 +60,15 @@ class NodePainter extends CustomPainter {
             Rect.fromLTWH(x, y, width, topBarHeight + 200.0), Radius.circular(2.0)),
         paintStroke);
 
+    _paintNodeName(canvas);
+
+  }
+
+  void _paintNodeName(Canvas canvas)
+  {
     double textDeltaY = (topBarHeight - tp.height) / 2;
     double textDeltaX = (width - tp.width) / 2;
     tp.paint(canvas, Offset(x + textDeltaX, y + textDeltaY));
-
   }
 
   @override

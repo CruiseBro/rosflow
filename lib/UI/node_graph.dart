@@ -5,6 +5,7 @@ import 'package:rosflow/models/topic.dart';
 
 import 'node_graph_painter.dart';
 import '../camera.dart';
+import 'node_painter.dart';
 
 final Color darkBlue = Color.fromARGB(255, 18, 32, 47);
 
@@ -16,9 +17,45 @@ class NodeGraph extends StatefulWidget {
 }
 
 class _MyAppState extends State<NodeGraph> {
+  final marginx = 40.0;
+  final marginy = 80.0;
   Camera globalCam = Camera();
   bool isDown = false;
   Offset startPosition = Offset(0, 0);
+  List<NodePainter> nodeViews = [];
+  NodePainter? selectedNode;
+
+  @override
+  void initState() {
+    nodeViews.add(NodePainter(
+        x: 0.0,
+        y: 0.0,
+        node: Node(name: "Node 1", inputTopics: [
+          Topic(name: "input topic 1", type: "std_msgs/String")
+        ], outputTopics: [
+          Topic(name: "output topic 1", type: "std_msgs/String")
+        ])));
+    nodeViews.add(NodePainter(
+        x: 500,
+        y: 0,
+        node: Node(name: "Node 2", inputTopics: [
+          Topic(name: "input topic 2", type: "std_msgs/String")
+        ], outputTopics: [
+          Topic(name: "output topic 1", type: "std_msgs/String")
+        ])));
+  }
+
+  NodePainter? hitNode(double x, double y) {
+    final double cx = (x - globalCam.x  - marginx) / globalCam.scale;
+    final double cy = (y  - globalCam.y - marginy) / globalCam.scale;
+    for (var node in nodeViews) {
+      if (node.isWithinHead(cx, cy)) {
+        return node;
+      }
+    }
+
+    return null;
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -33,24 +70,32 @@ class _MyAppState extends State<NodeGraph> {
       },
       onPointerDown: (gs.PointerDownEvent event) {
         isDown = true;
+        selectedNode = hitNode(event.position.dx, event.position.dy);
         startPosition = event.position;
       },
       onPointerUp: (gs.PointerUpEvent event) {
         isDown = false;
+        selectedNode = null;
       },
       onPointerMove: (gs.PointerMoveEvent event) {
         if (isDown) {
           Offset offsetDelta = event.position - startPosition;
           startPosition = event.position;
-          setState(() {
-            globalCam.x += offsetDelta.dx;
-            globalCam.y += offsetDelta.dy;
-          });
+          if (selectedNode == null) {
+            setState(() {
+              globalCam.x += offsetDelta.dx;
+              globalCam.y += offsetDelta.dy;
+            });
+          }
+          else {
+            setState(() {
+              selectedNode!.move(offsetDelta.dx / globalCam.scale, offsetDelta.dy / globalCam.scale);
+            });
+          }
         }
       },
-
       child: Container(
-          padding: EdgeInsets.symmetric(horizontal: 40, vertical: 80),
+          padding: EdgeInsets.symmetric(horizontal: marginx, vertical: marginy),
           child: LayoutBuilder(
             // Inner yellow container
             builder: (_, constraints) => Container(
@@ -58,18 +103,7 @@ class _MyAppState extends State<NodeGraph> {
               height: constraints.heightConstraints().maxHeight,
               child: CustomPaint(
                 painter: NodeGraphPainter(
-                  nodes: [
-                    Node(name: "Node 1", inputTopics: [
-                      Topic(name: "topic1", type: "std_msgs")
-                    ], outputTopics: [
-                      Topic(name: "outputTopic", type: "sensor_msgs")
-                    ]),
-                    Node(name: "Node 2", inputTopics: [
-                      Topic(name: "topic1", type: "std_msgs")
-                    ], outputTopics: [
-                      Topic(name: "outputTopic", type: "sensor_msgs")
-                    ])
-                  ],
+                  nodeViews: nodeViews,
                   globalCamera: globalCam,
                 ),
               ),

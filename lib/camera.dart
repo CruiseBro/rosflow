@@ -9,7 +9,7 @@ class Camera
 
   void set scale (double val)
   {
-    if(val > 0.2 && val < 2.5)
+    if(val > 0.2 && val < 1.8)
       {
         _scale = val;
       }

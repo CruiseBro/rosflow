@@ -11,23 +11,12 @@ class NodeGraphPainter extends CustomPainter {
 
   Vector4 boxPosTopLeft = Vector4(-0.5, -0.5, 0.0, 1.0);
   Vector4 boxPosBottomRight = Vector4(0.5, 0.5, 0.0, 1.0);
-  List<Node> nodes = [];
-  List<NodePainter> nodeViews = [];
+  final List<NodePainter> nodeViews;
   static const int step = 100;
   static const int min = -30000;
   static const int max = 30000;
 
-  NodeGraphPainter({required this.globalCamera, required this.nodes}) {
-    double xInc = 750;
-    double xVal = 0;
-    for(var node in nodes){
-      nodeViews.add(NodePainter(
-        node: node,
-        x: xVal,
-        y: 0.0
-      ));
-      xVal += xInc;
-    }
+  NodeGraphPainter({required this.globalCamera, required this.nodeViews}) {
   }
 
   @override
