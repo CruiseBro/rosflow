@@ -31,7 +31,8 @@ class _MyAppState extends State<NodeGraph> {
         x: 0.0,
         y: 0.0,
         node: Node(name: "Node 1", inputTopics: [
-          Topic(name: "input topic 1", type: "std_msgs/String")
+          Topic(name: "input topic 1", type: "std_msgs/String"),
+          Topic(name: "benis", type: "std_msgs/String")
         ], outputTopics: [
           Topic(name: "output topic 1", type: "std_msgs/String")
         ])));
@@ -39,7 +40,8 @@ class _MyAppState extends State<NodeGraph> {
         x: 500,
         y: 0,
         node: Node(name: "Node 2", inputTopics: [
-          Topic(name: "input topic 2", type: "std_msgs/String")
+          Topic(name: "input topic 2", type: "std_msgs/String"),
+          Topic(name: "input topic 3", type: "std_msgs/String")
         ], outputTopics: [
           Topic(name: "output topic 1", type: "std_msgs/String")
         ])));
